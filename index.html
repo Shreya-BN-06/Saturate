@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saturate India - IT Freelance Market Dashboard (Q1 2026)</title>
+    <meta name="description" content="Interactive freelance analytics dashboard tracking workforce, jobs, average rates, and final market scores across 10 major Indian IT hubs.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Glowing Orbs -->
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" aria-label="Sidebar Navigation">
+            <div class="sidebar-brand">
+                <span class="logo-icon">⚡</span>
+                <h2>Sat<span class="highlight">urate</span></h2>
+            </div>
+            
+            <nav class="sidebar-nav" aria-label="Main Navigation">
+                <button class="nav-btn active" data-tab="tab-explorer" id="navExplorerBtn">
+                    <span class="icon">📊</span> City × Role Matrix
+                </button>
+                <button class="nav-btn" data-tab="tab-wizard" id="navWizardBtn">
+                    <span class="icon">🧙‍♂️</span> Location Wizard
+                </button>
+                <button class="nav-btn" data-tab="tab-benchmark" id="navBenchmarkBtn">
+                    <span class="icon">💰</span> Rate Benchmarking
+                </button>
+                <button class="nav-btn" data-tab="tab-watchlist" id="navWatchlistBtn">
+                    <span class="icon">💾</span> Saved Comparisons
+                </button>
+                <button class="nav-btn" data-tab="tab-alerts" id="navAlertsBtn">
+                    <span class="icon">🔔</span> Market Alerts
+                </button>
+            </nav>
+
+            <!-- Upload Quarterly Data Widget -->
+            <div class="sidebar-widget" style="margin-top: auto; padding: 1.2rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 18px;">
+                <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                <button id="uploadDataBtn" class="btn-primary" style="width: 100%; font-size: 0.85rem; padding: 0.6rem;">
+                    📂 Upload Quarterly CSV
+                </button>
+                <div id="uploadStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center;">Supports standard CSV format</div>
+            </div>
+
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div>
+                    <h1 id="pageTitle">City × Role Explorer</h1>
+                    <p class="subtitle" id="pageSubtitle">Interactive heatmap matrix of India's freelance market score (Q1 2026)</p>
+                </div>
+                <div class="header-controls">
+                    <button id="liveSimBtn" class="sim-btn" title="Simulate market shifts and triggers">
+                        <span class="sim-icon">🔄</span> Market Simulator
+                    </button>
+                    <button id="themeToggle" class="theme-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+                        <span id="themeIcon">☀️</span>
+                    </button>
+                    <div class="status-badge">
+                        <span class="dot"></span>
+                        <span id="simStatus">Q1 2026 Baseline</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 1. TAB: Heatmap / Matrix Explorer -->
+            <div id="tab-explorer" class="tab-pane active" role="tabpanel">
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2>📍 IT Freelance Scorecard Heatmap</h2>
+                        <div class="heatmap-controls">
+                            <!-- State Filter -->
+                            <div class="filter-group">
+                                <label for="stateFilter">State</label>
+                                <select id="stateFilter" class="modern-select filter-select">
+                                    <option value="All">All States</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Delhi / NCR">Delhi NCR</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Kerala">Kerala</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Metric Toggle -->
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" data-metric="Final_Score">Score</button>
+                                <button class="toggle-btn" data-metric="Jobs_Available_Q1_2026">Jobs</button>
+                                <button class="toggle-btn" data-metric="Avg_Hourly_Rate_INR">Rate</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Heatmap Legend -->
+                    <div class="heatmap-legend">
+                        <span>Legend:</span>
+                        <span class="legend-item"><span class="legend-color high"></span> High Yield (🟢 Score ≥ 20)</span>
+                        <span class="legend-item"><span class="legend-color mid"></span> Moderate (🟡 Score 15-20)</span>
+                        <span class="legend-item"><span class="legend-color low"></span> Saturated / Low Yield (🔴 Score < 15)</span>
+                    </div>
+
+                    <!-- Scrollable Heatmap Table Container -->
+                    <div class="heatmap-container">
+                        <table class="heatmap-table" id="explorerHeatmap">
+                            <!-- Populated dynamically via JS -->
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                        <span>💡 Hover over cells for detailed stats. Click a cell to view calculations, benchmark comparison, and configure custom triggers.</span>
+
+                    </div>
+                </div>
+
+                <!-- Heatmap Summary insights -->
+                <div class="charts-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="glass-panel" style="margin-bottom: 0;">
+                        <h3>🏆 Top Market Arbitrage Opportunities</h3>
+                        <div class="insights-list" id="topScoreList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="glass-panel" style="margin-bottom: 0;">
+                        <h3>⚠️ Market Saturation Risk (Lowest Scores)</h3>
+                        <div class="insights-list" id="bottomScoreList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. TAB: Location Optimizer Wizard -->
+            <div id="tab-wizard" class="tab-pane" role="tabpanel">
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2>🧙‍♂️ "Where Should I Work From?" Wizard</h2>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--text-secondary); max-width: 800px;">
+                        By leveraging geographical pricing disparities (arbitrage), you can discover cities that offer much better freelance opportunities for your role relative to local competition and workforce saturation.
+                    </p>
+
+                    <div class="wizard-form-box">
+                        <div class="form-group">
+                            <label for="wizardRole">Select Your Role</label>
+                            <select id="wizardRole" class="modern-select">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="wizardCity">Your Current Location</label>
+                            <select id="wizardCity" class="modern-select">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: flex-end;">
+                            <button id="wizardSubmitBtn" class="btn-primary" style="width: 100%; height: 50px;">
+                                🚀 Calculate Best Locations
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Wizard Results Area -->
+                    <div id="wizardResults" class="wizard-results-container" style="display: none;">
+                        <div class="results-header-summary">
+                            <div class="results-badge" id="wizardCurrentStatusBadge">Current rank: #5 of 10</div>
+                            <h3 id="wizardSummaryText">Analyzing opportunities for AI Engineer in Bengaluru...</h3>
+                        </div>
+
+                        <div class="wizard-sections-grid">
+                            <!-- Section: Better Freelance Score Cities -->
+                            <div class="results-section-card score-rankings">
+                                <h4>📈 Recommended Cities (Highest Freelance Score)</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                    These cities offer the best blend of high rates and low job-competition/saturation.
+                                </p>
+                                <div class="recommendations-list" id="wizardScoreRecs">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Section: Highest Hourly Rate Cities -->
+                            <div class="results-section-card rate-rankings">
+                                <h4>💰 Premium Rate Cities (Highest Average Pricing)</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                    These cities offer the highest raw hourly rates, though they may have higher saturation.
+                                </p>
+                                <div class="recommendations-list" id="wizardRateRecs">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Strategic Recommendation Banner -->
+                        <div class="wizard-strategic-banner">
+                            <div class="banner-icon">💡</div>
+                            <div class="banner-content">
+                                <h5>Strategic Arbitrage Recommendation</h5>
+                                <p id="wizardStrategicAdvice">Generating recommendation...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. TAB: Rate Benchmarking Tool -->
+            <div id="tab-benchmark" class="tab-pane" role="tabpanel">
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2>💰 Freelance Rate Benchmarking Tool</h2>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--text-secondary); max-width: 800px;">
+                        Evaluate whether you are pricing your services competitively or undercharging compared to the average market rates for your specific role and city.
+                    </p>
+
+                    <form id="benchmarkForm" class="wizard-form-box" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="form-group">
+                            <label for="benchmarkRole">Select Your Role</label>
+                            <select id="benchmarkRole" class="modern-select">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="benchmarkCity">Select Your City</label>
+                            <select id="benchmarkCity" class="modern-select">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="benchmarkRate">Your Hourly Rate (INR / hr)</label>
+                            <input type="number" id="benchmarkRate" class="modern-input" placeholder="e.g. 1500" value="1200" required>
+                        </div>
+                        <div style="display: flex; align-items: flex-end;">
+                            <button type="submit" class="btn-primary" style="width: 100%; height: 50px;">
+                                📊 Analyze My Rate
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Benchmark Results Container -->
+                    <div id="benchmarkResults" class="benchmark-results-container" style="display: none; margin-top: 2rem;">
+                        <div class="benchmark-grid">
+                            <!-- Gauge & Numerical Comparison -->
+                            <div class="benchmark-card-main">
+                                <h4>Your Pricing Analysis</h4>
+                                <div class="price-feedback-value" id="benchmarkRateDisplay">₹1,200 / hr</div>
+                                <div class="price-status-badge" id="benchmarkFeedbackBadge">Loading...</div>
+                                
+                                <div class="price-gauge-wrapper">
+                                    <div class="price-gauge-bar">
+                                        <div class="price-gauge-fill" id="benchmarkGaugeFill" style="width: 40%;"></div>
+                                        <span class="gauge-marker avg" id="benchmarkGaugeAvgMarker" style="left: 50%;"></span>
+                                    </div>
+                                    <div class="price-gauge-labels">
+                                        <span id="benchmarkGaugeMin">₹600</span>
+                                        <span class="avg-label" id="benchmarkGaugeAvgLabel">City Avg: ₹1,500</span>
+                                        <span id="benchmarkGaugeMax">₹3,000</span>
+                                    </div>
+                                </div>
+
+                                <p class="benchmark-explanation" id="benchmarkExplanationText">
+                                    Analyzing rate structure...
+                                </p>
+                            </div>
+
+                            <!-- Cross-city comparative chart -->
+                            <div class="benchmark-card-chart">
+                                <h4>National Rate Distribution for this Role</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                    Comparison of your rate against average freelance rates across all top Indian cities.
+                                </p>
+                                
+                                <div class="custom-chart-container" id="benchmarkCustomChart">
+                                    <!-- Populated dynamically via JS with CSS bars -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. TAB: Saved Comparisons / Watchlist -->
+            <div id="tab-watchlist" class="tab-pane" role="tabpanel">
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2>💾 Saved Market Watchlist</h2>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">
+                            Compare up to 3 saved city-role configurations side-by-side.
+                        </div>
+                    </div>
+
+                    <!-- Watchlist Empty State -->
+                    <div id="watchlistEmptyState" class="empty-state-box">
+                        <div class="empty-icon">📂</div>
+                        <h3>Your Watchlist is Empty</h3>
+                        <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Add items to your watchlist by clicking cells in the City × Role Matrix explorer or using the quick actions.
+                        </p>
+                    </div>
+
+                    <!-- Watchlist Grid -->
+                    <div class="watchlist-grid" id="watchlistGrid" style="display: none;">
+                        <!-- Saved Cards Appended Dynamically -->
+                    </div>
+
+                    <!-- Comparative Table Area -->
+                    <div id="watchlistComparisonArea" style="display: none; margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">📊 Side-by-Side Comparison</h3>
+                        <div class="heatmap-container">
+                            <table class="heatmap-table comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th id="compColHeader1" class="comp-col-header">-</th>
+                                        <th id="compColHeader2" class="comp-col-header">-</th>
+                                        <th id="compColHeader3" class="comp-col-header">-</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="watchlistComparisonBody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. TAB: Alerts / Notification Center -->
+            <div id="tab-alerts" class="tab-pane" role="tabpanel">
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2>🔔 Market Alert Configuration</h2>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--text-secondary); max-width: 800px;">
+                        Configure custom notification thresholds. When job counts surge, average hourly rates drop, or freelance scores shift past your thresholds during market simulator updates, you will receive real-time alerts.
+                    </p>
+
+                    <!-- Alert Creator Form -->
+                    <form id="createAlertForm" class="wizard-form-box" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                        <div class="form-group">
+                            <label for="alertCity">City</label>
+                            <select id="alertCity" class="modern-select">
+                                <option value="All">All Cities</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="alertRole">Role</label>
+                            <select id="alertRole" class="modern-select">
+                                <option value="All">All Roles</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="alertMetric">Metric</label>
+                            <select id="alertMetric" class="modern-select">
+                                <option value="Jobs_Available_Q1_2026">Job Count</option>
+                                <option value="Avg_Hourly_Rate_INR">Hourly Rate (₹)</option>
+                                <option value="Final_Score">Freelance Score</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="alertCondition">Condition</label>
+                            <select id="alertCondition" class="modern-select">
+                                <option value="greater">Greater Than (&gt;)</option>
+                                <option value="less">Less Than (&lt;)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="alertThreshold">Threshold</label>
+                            <input type="number" id="alertThreshold" class="modern-input" placeholder="e.g. 1000" step="any" required>
+                        </div>
+                        <div style="display: flex; align-items: flex-end;">
+                            <button type="submit" class="btn-primary" style="width: 100%; height: 50px;">
+                                ➕ Add Alert Trigger
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Active Alerts List -->
+                    <div style="margin-top: 2rem;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Active Market Triggers</h3>
+                        <div class="active-alerts-list" id="activeAlertsList">
+                            <!-- Dynamically loaded -->
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Cell Detail Overlay Modal -->
+    <div class="detail-overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="detail-modal">
+            <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">✕</button>
+            <div class="detail-modal-content">
+                <div class="modal-title-row">
+                    <span class="badge-priority" id="modalScoreBadge">Score: 23.5 🟢</span>
+                    <h2 id="modalTitle" style="font-size: 1.6rem; font-weight: 800; margin-top: 0.5rem;">AI Engineer in Bengaluru</h2>
+                    <div class="modal-meta" id="modalSubmeta">
+                        <span>Karnataka</span>
+                        <span>•</span>
+                        <span>IT Workforce: 1,508,000</span>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Left: Score Formula Breakdown -->
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>🧮</span> Formula Calculation Breakdown
+                        </h3>
+                        
+                        <div class="formula-breakdown-box">
+                            <div class="formula-intro">
+                                Score = Rate Affordability × Saturation Adjustment
+                            </div>
+                            
+                            <div class="formula-cards-grid">
+                                <div class="formula-card">
+                                    <div class="formula-card-title">Jobs Available</div>
+                                    <div class="formula-card-value" id="formulaJobsVal">1,172</div>
+                                    <div class="formula-card-sub" id="formulaJobsSub">Naukri listings</div>
+                                </div>
+                                <div class="formula-card">
+                                    <div class="formula-card-title">Jobs / 100K</div>
+                                    <div class="formula-card-value" id="formulaJobsPer100KVal">77.72</div>
+                                    <div class="formula-card-sub">Of total IT workforce</div>
+                                </div>
+                                <div class="formula-card">
+                                    <div class="formula-card-title">Hourly Rate</div>
+                                    <div class="formula-card-value" id="formulaRateVal">₹3,200/hr</div>
+                                    <div class="formula-card-sub">Blended average</div>
+                                </div>
+                            </div>
+
+                            <div class="formula-steps">
+                                <div class="formula-step-item">
+                                    <span class="step-num">1</span>
+                                    <div class="step-desc">
+                                        <strong>Rate Affordability</strong> = 10,000 / Hourly Rate
+                                        <div class="step-calc" id="calcRateAfford">10,000 / 3,200 = <strong>3.1250</strong></div>
+                                    </div>
+                                </div>
+                                <div class="formula-step-item">
+                                    <span class="step-num">2</span>
+                                    <div class="step-desc">
+                                        <strong>Saturation Adjustment</strong> = 150 / Jobs per 100K
+                                        <div class="step-calc" id="calcSatAdj">150 / 77.72 = <strong>1.9300</strong></div>
+                                    </div>
+                                </div>
+                                <div class="formula-step-item final">
+                                    <span class="step-num">✓</span>
+                                    <div class="step-desc">
+                                        <strong>Final Score</strong> = Rate Affordability × Saturation Adjustment
+                                        <div class="step-calc" id="calcFinalScore">3.1250 × 1.9300 = <strong style="color: var(--primary);">6.0314</strong></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Quick Actions & Benchmarks -->
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <div class="verification-widget" style="padding: 1.5rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 20px;">
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.8rem;">⚡ Quick Dashboard Actions</h3>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.2rem;">
+                                Add this city-role configuration to your Watchlist for comparison, or set up a price trigger alert.
+                            </p>
+                            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                                <button class="btn-verify" id="modalWatchlistBtn" style="width: 100%; font-size: 0.9rem;">
+                                    💾 Save to Watchlist
+                                </button>
+                                <button class="btn-primary" id="modalCreateAlertBtn" style="width: 100%; padding: 0.8rem; font-size: 0.9rem; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary); color: #ffffff;">
+                                    🔔 Configure Alert Trigger
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="verification-widget" style="padding: 1.5rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 20px;">
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">📊 Pricing Position</h3>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;" id="modalPriceCompareText">
+                                Hourly rate of ₹3,200/hr compared to other cities.
+                            </p>
+                            <div class="national-range-bar">
+                                <div class="national-range-fill" id="modalPriceRangeFill" style="left: 0%; width: 100%;"></div>
+                                <span class="national-range-marker" id="modalPriceMarker" style="left: 50%;" title="Bengaluru Rate"></span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                                <span id="modalPriceMinText">Min: ₹1,800/hr</span>
+                                <span id="modalPriceMaxText">Max: ₹3,200/hr</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Area -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Inject baseline datasets script -->
+    <script src="data.js"></script>
+    <!-- Main Controller -->
+    <script src="app.js"></script>
+</body>
+</html>
