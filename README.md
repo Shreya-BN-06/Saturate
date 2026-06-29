@@ -5,4 +5,5 @@ For each city-role combination, the project computes a composite Opportunity Sco
   * Jobs per 100K workforce — how many freelance/contract listings exist relative to the local IT talent pool
   * Rate Affordability — how competitively priced the role is in that city
   * Saturation Adjustment — a correction factor that rewards under-served markets and discounts oversaturated ones
+
 These combine into a single Final Score, color-coded green/yellow/red, so a freelancer or business can instantly see where demand is strong, rates are fair, and competition is manageable  without manually cross-referencing job boards and salary sites city by city.
